@@ -49,7 +49,6 @@ void Graph::addEdge(int v, int w, double weight)
 
     // cout << "construct edge: (" << v << ", " << w << ", " << weight << ")" << endl;
     adj[v].push_back(make_pair(w, weight)); // Add w to v’s list.
-    cout << "E: " << E << endl;
     ++E;
 
 }

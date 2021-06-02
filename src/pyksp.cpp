@@ -73,15 +73,15 @@ void PyKsp::init_from_adj(py::array_t<int> A, py::array_t<double> W){
     throw py::value_error("Weights array must be of same length as adjancency matrix");
 
   for (py::ssize_t j = 0; j < a.shape(1); j++){
-    py::print("Adding edge (", a(0, j), ",", a(1, j), ")", "with weight: ", w(j));
+    // py::print("Adding edge (", a(0, j), ",", a(1, j), ")", "with weight: ", w(j));
      ksp->addEdge(a(0, j), a(1, j), w(j));
-    py::print("num edges: ", ksp->numEdges());
+    // py::print("num edges: ", ksp->numEdges());
   }
 }
 
 void PyKsp::run(){
-  float res = ksp->run();
-  py::print("BellmanFord: ", res);
+  auto path = ksp->run();
+  // py::print("BellmanFord: ", res);
 
 
 }

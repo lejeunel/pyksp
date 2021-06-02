@@ -61,8 +61,8 @@ class Ksp : public Graph {
 
     float run(){
 
-        float res = BellmanFord();
-        return res;
+        BellmanFord();
+        Dijkstra();
     }
 
     private:
@@ -82,14 +82,26 @@ class Ksp : public Graph {
         double tol;
         double new_cost; // will store two consecutives costs for comparison
 
-    float BellmanFord(){
+    std::vector<int> BellmanFord(){
         int dist[V];
         int pred[V];
 
         algos::BellmanFord(*this, source_id, dist, pred);
-
         auto path = pred_to_path(pred, source_id, sink_id);
         print_path(path);
+        return path;
+
+    }
+
+    std::vector<int> Dijkstra(){
+        int dist[V];
+        int pred[V];
+        bool sptSet[V];
+
+        algos::dijkstra(*this, source_id, dist, pred, sptSet);
+        auto path = pred_to_path(pred, source_id, sink_id);
+        print_path(path);
+        return path;
 
 
     }
