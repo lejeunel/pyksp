@@ -32,6 +32,6 @@ Go through the ~demo.py~ script to see how to interact with the module.
 Most steps are commented therein.
 
 * Example
-A simple graph with 8 nodes and 13 edges gives the following set of 3 edge-disjoint shortest paths:
+A simple graph with 8 nodes and 13 edges, where ~a~ is the source node and ~z~ is the sink node, gives the following set of 3 edge-disjoint shortest paths:
 
 [[demo.png]]
