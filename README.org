@@ -2,7 +2,7 @@
 
 * Description
 This package contains an efficient implementation (C++) of the edge-disjoint K-shortest paths algorithm.
-It comes with a python wrapper that allows to give the graph data through Numpy arrays.
+It comes with a python wrapper (pybind11) that allows to give the graph data through Numpy arrays.
 
 The underlying C++ code is largely taken from [[https://fleuret.org/cgi-bin/gitweb/gitweb.cgi?p=mtp.git;a=summary][here]].
 
