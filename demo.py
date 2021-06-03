@@ -30,7 +30,7 @@ A = np.array(A)
 W = np.array([1, 1, 1, 1, 1, 3, 5, 1, 1, 2, 7, 2, 1])
 
 tracker = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
-tracker.config(min_cost=False, verbose=True, l_max=2)
+tracker.config(min_cost=False, verbose=True, l_max=3)
 
 res = tracker.run()
 
@@ -57,7 +57,7 @@ for fname, path in zip(fnames, res):
     f.render()
 
 # plots images
-fig, axs = plt.subplots(1, len(fnames), figsize=(15, 6))
+fig, axs = plt.subplots(1, len(fnames), figsize=(10, 6))
 if (len(fnames) == 1):
     axs = [axs]
 
@@ -67,4 +67,5 @@ for i, (fname, ax) in enumerate(zip(fnames, axs)):
     ax.set_title('path {}/{}'.format(i + 1, len(fnames)))
     ax.axis('off')
 
-plt.show()
+plt.tight_layout()
+fig.savefig('demo.png')

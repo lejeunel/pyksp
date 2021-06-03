@@ -1,5 +1,37 @@
-#+TITLE: Readme
+#+TITLE: Edge-disjoint K-shortest paths
+
+* Description
+This package contains an efficient implementation (C++) of the edge-disjoint K-shortest paths algorithm.
+It comes with a python wrapper that allows to give the graph data through Numpy arrays.
+
+The underlying C++ code is largely taken from [[https://fleuret.org/cgi-bin/gitweb/gitweb.cgi?p=mtp.git;a=summary][here]].
+
+* Installation
+We give here installation instructions applicable to Ubuntu/Debian-based distributions.
+
+- Install requirements:
 
     #+BEGIN_SRC sh
-    sudo apt install libboost-graph1.71.0
+    sudo apt install -y graphviz cmake
     #+END_SRC
+
+- Clone repository along with the pybind11 sub-module
+
+    #+BEGIN_SRC sh
+    git clone --recurse-submodules git@github.com:lejeunel/pyksp.git
+    #+END_SRC
+
+- Compile and install using your favorite package-manager, e.g.
+    #+BEGIN_SRC sh
+    cd pyksp
+    pip install .
+    #+END_SRC
+
+* Usage
+Go through the ~demo.py~ script to see how to interact with the module.
+Most steps are commented therein.
+
+* Example
+A simple graph with 8 nodes and 13 edges gives the following set of 3 edge-disjoint shortest paths:
+
+[[demo.png]]
