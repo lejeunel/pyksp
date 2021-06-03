@@ -5,6 +5,8 @@ import numpy as np
 import pyksp
 from graphviz import Digraph
 import matplotlib.pyplot as plt
+import os
+import glob
 
 nodes = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'z': 7}
 inv_nodes = {v: k for k, v in nodes.items()}
@@ -28,9 +30,14 @@ A = np.array(A)
 W = np.array([1, 1, 1, 1, 1, 3, 5, 1, 1, 2, 7, 2, 1])
 
 tracker = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
-tracker.config(min_cost=False, verbose=True, l_max=3)
+tracker.config(min_cost=False, verbose=True, l_max=2)
 
 res = tracker.run()
+
+# delete graphviz files that could exist
+files = glob.glob(os.path.join('*.gv.*'))
+for f in files:
+    os.remove(f)
 
 # generate image of graphs
 fnames = ['graph_{}'.format(k) for k in range(len(res))]
@@ -40,8 +47,6 @@ for fname, path in zip(fnames, res):
 
     edges_of_path = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
 
-    import pdb
-    pdb.set_trace()  ## DEBUG ##
     for e, w in zip(A, W):
 
         f.edge(inv_nodes[e[0]],
@@ -53,10 +58,13 @@ for fname, path in zip(fnames, res):
 
 # plots images
 fig, axs = plt.subplots(1, len(fnames), figsize=(15, 6))
-for i, fname in enumerate(fnames):
+if (len(fnames) == 1):
+    axs = [axs]
+
+for i, (fname, ax) in enumerate(zip(fnames, axs)):
     im = plt.imread(fname + '.gv.png')
-    axs[i].imshow(im)
-    axs[i].set_title('path {}/{}'.format(i + 1, len(fnames)))
-    axs[i].axis('off')
+    ax.imshow(im)
+    ax.set_title('path {}/{}'.format(i + 1, len(fnames)))
+    ax.axis('off')
 
 plt.show()
