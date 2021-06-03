@@ -23,6 +23,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -31,26 +32,22 @@ namespace py = pybind11;
 class PyKsp{
 
     public:
-        PyKsp(const int & n_vertices){
+    PyKsp(py::array_t<int> vertices_from,py::array_t<int> vertices_to,
+          py::array_t<scalar_t> W, int n_vertices, int source, int sink);
+        ~PyKsp();
 
-          ksp = new Ksp(n_vertices);
-        };
-
-        void init_from_adj(py::array_t<int> A, py::array_t<double> W);
-        void run();
-        void config(int a_l_max, bool a_min_cost, int a_source_id,
-                          int a_sink_id, bool a_verbose){
+        std::vector<py::array_t<int>> run();
+        void config(float tolerance, bool a_min_cost, bool a_verbose, int a_l_max){
+          ksp->set_tolerance(tolerance);
           ksp->set_l_max(a_l_max);
           ksp->set_min_cost(a_min_cost);
-          ksp->set_source_id(a_source_id);
-          ksp->set_sink_id(a_sink_id);
           ksp->set_verbose(a_verbose);
 
         }
 
         std::string summary() const{
           stringstream ss;
-          ss << ksp->numVertex() << " vertices, " << ksp->numEdges() << " edges";
+          ss << ksp->get_n_vertices() << " vertices, " << ksp->get_n_edges() << " edges";
           return  ss.str();
         }
 
@@ -61,38 +58,45 @@ class PyKsp{
 };
 
 
-void PyKsp::init_from_adj(py::array_t<int> A, py::array_t<double> W){
+PyKsp::PyKsp(py::array_t<int> vertices_from, py::array_t<int> vertices_to,
+             py::array_t<scalar_t> weights,
+             int n_vertices,
+                        int source, int sink){
 
-  auto a = A.unchecked<2>(); // A must have ndim = 2; can be non-writeable
-  auto w = W.unchecked<1>(); // W must have ndim = 1; can be non-writeable
+  // must have ndim = 1; can be non-writeable
+  auto _vertices_from = vertices_from.unchecked<1>();
+  auto _vertices_to = vertices_to.unchecked<1>();
+  auto _weights = weights.unchecked<1>();
 
-  if(a.shape(0) != 2)
-    throw py::value_error("Adjacency matrix must be of shape [2xN]");
+  if((_weights.shape(0) != _vertices_from.shape(0)) | (_weights.shape(0) != _vertices_to.shape(0)))
+    throw py::value_error("Weights array must be of same length as adjacency matrix");
 
-  if(w.shape(0) != a.shape(1))
-    throw py::value_error("Weights array must be of same length as adjancency matrix");
+  int n_edges = _vertices_from.shape(0);
+  int * data_vertices_from = vertices_from.mutable_data();
+  int * data_vertices_to = vertices_to.mutable_data();
+  scalar_t * data_weights = weights.mutable_data();
 
-  for (py::ssize_t j = 0; j < a.shape(1); j++){
-    // py::print("Adding edge (", a(0, j), ",", a(1, j), ")", "with weight: ", w(j));
-     ksp->addEdge(a(0, j), a(1, j), w(j));
-    // py::print("num edges: ", ksp->numEdges());
-  }
+  ksp = new Ksp(n_vertices, n_edges, data_vertices_from,
+                data_vertices_to, data_weights, source, sink);
+
+}
+PyKsp::~PyKsp(){
+
+  ksp->~Ksp();
 }
 
-void PyKsp::run(){
-  auto path = ksp->run();
-  // py::print("BellmanFord: ", res);
-
-
+std::vector<py::array_t<int>> PyKsp::run(){
+  return ksp->run();
 }
 
 PYBIND11_MODULE(pyksp, m) {
     py::class_<PyKsp>(m, "PyKsp")
-      .def(py::init<const int &>())
-        .def("init_from_adj", &PyKsp::init_from_adj)
+      .def(py::init<const py::array_t<int> &,
+           const py::array_t<int> &,
+           const py::array_t<scalar_t> &,
+           const int &, const int &, const int &>())
       .def("config", &PyKsp::config, "Set parameters",
-      py::arg("l_max") = -1, py::arg("min_cost") = false,
-            py::arg("source_id") = 0, py::arg("sink_id")=1, py::arg("verbose") = true)
+      py::arg("tol") = 1e-6, py::arg("min_cost") = false, py::arg("verbose") = true, py::arg("l_max") = -1)
       .def("run", &PyKsp::run, "Runs K-shortest paths")
       .def("__repr__",
               [](const PyKsp &a) {

@@ -1,66 +1,83 @@
-#include <iostream>
-#include <list>
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
-#include <algorithm>
-#include <vector>
-#include <climits>
-#include <fstream>
+ #include <iostream>
+#include <float.h>
+#include <cmath>
+#include "misc.h"
+#include "path.h"
 
 using namespace std;
 
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
+class Vertex;
+class Edge;
+
 // Graph class represents a directed graph
 // using adjacency list representation
 class Graph
 {
-public:
-    int V = 0;    // No. of vertices
-    int E = 0;    // No. of edges
+    public:
 
-    // Pointer to an array containing
-    // adjacency lists
-    list<pair<int, int> > *adj;
+        Graph(int n_vertices, int n_edges,
+            int * vertex_from, int * vertex_to,
+              scalar_t * weights,
+            int source, int sink);   // Constructor
 
-    Graph(int V);   // Constructor
+        ~Graph();
 
-    // function to add an edge to graph
-    void addEdge(int v, int w, double weight);
-    void printEdge();
-    int numVertex();
-    int numEdges(){ return E;}
+
+        int get_n_vertices() {return _n_vertices;}
+        int get_n_edges(){ return _n_edges;}
+        Edge * get_edges(){return _edges;}
+        Vertex * get_vertices(){return _vertices;}
+
+        void find_best_paths();
+        void update_positivized_lengths();
+
+        void force_positivized_lengths();
+        Path * retrieve_path();
+        void retrieve_disjoint_paths();
+        int retrieve_one_path(Edge *e, Path *path, int *used_edges);
+
+        // These variables are filled when retrieve_disjoint_paths is called
+        int n_paths;
+        Path **paths;
+
+        // shortest paths algorithms
+        void dp_compute_distances();
+        void Dijkstra();
+        // Fills _dp_order
+        void compute_dp_ordering();
+
+        void set_min_cost(bool);
+        void set_verbose(bool);
+        void set_tolerance(float);
+        void set_l_max(int);
+    private:
+        int _n_vertices = 0;
+        int _n_edges = 0;
+
+        Vertex * _source;
+        Vertex * _sink;
+
+        Edge * _edges;
+        Vertex * _vertices;
+
+        // For Dijkstra
+        Vertex ** _heap;
+
+        // Updating the distances from the source in that order will work in
+        // the original graph (which has to be a DAG)
+        Vertex **_dp_order;
+
+        // parameters
+        bool min_cost = true;
+        bool verbose = false;
+        float tolerance = 0;
+        float l_max = -1;
+
 };
 
-int Graph::numVertex()
-{
-    return this->V;
-}
 
-Graph::Graph(int V)
-{
-    this->V = V;
-    adj = new list<pair<int, int> >[V];
-}
-
-void Graph::addEdge(int v, int w, double weight)
-{
-
-    // cout << "construct edge: (" << v << ", " << w << ", " << weight << ")" << endl;
-    adj[v].push_back(make_pair(w, weight)); // Add w to v’s list.
-    ++E;
-
-}
-
-void Graph::printEdge()
-{
-    for (int k = 0; k < V; k++){
-        for (list<pair<int, int> >::const_iterator i = adj[k].begin(); i != adj[k].end(); i++){
-            cout << k << "," << i->first << "," << i->second;
-            cout << endl;
-        }
-    }
-}
 
 #endif // GRAPH_H_

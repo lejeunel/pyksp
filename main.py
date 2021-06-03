@@ -3,8 +3,10 @@
 import pyksp
 import numpy as np
 import pyksp
+from graphviz import Digraph
 
 nodes = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'z': 7}
+inv_nodes = {v: k for k, v in nodes.items()}
 
 A = []
 A.append((nodes['a'], nodes['b']))
@@ -20,13 +22,24 @@ A.append((nodes['f'], nodes['d']))
 A.append((nodes['a'], nodes['g']))
 A.append((nodes['g'], nodes['z']))
 A.append((nodes['c'], nodes['g']))
-A = np.array(A).T
+A = np.array(A)
 
 W = np.array([1, 1, 1, 1, 1, 3, 5, 1, 1, 2, 7, 2, 1])
 
-tracker = pyksp.PyKsp(np.unique(A).size)
-tracker.config(source_id=0, sink_id=7)
+tracker = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
+tracker.config(min_cost=False, verbose=True, l_max=3)
 
-tracker.init_from_adj(A, W)
-print(tracker)
-tracker.run()
+res = tracker.run()
+import pdb
+
+pdb.set_trace()  ## DEBUG ##
+print(res)
+
+f = Digraph()
+f.attr('node', shape='circle')
+
+for e, w in zip(A, W):
+
+    f.edge(inv_nodes[e[0]], inv_nodes[e[1]], label=str(w))
+
+f.view()
