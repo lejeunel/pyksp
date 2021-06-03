@@ -14,7 +14,6 @@ void Path::print(){
 
     std::cout << "length: " << length << std::endl;
     for(int i=0; i<n_vertices;++i){
-        std::cout << vertices[i];
         if(i<n_vertices - 1)
             std::cout << "->";
    }

@@ -4,6 +4,7 @@ import pyksp
 import numpy as np
 import pyksp
 from graphviz import Digraph
+import matplotlib.pyplot as plt
 
 nodes = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'z': 7}
 inv_nodes = {v: k for k, v in nodes.items()}
@@ -30,16 +31,32 @@ tracker = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
 tracker.config(min_cost=False, verbose=True, l_max=3)
 
 res = tracker.run()
-import pdb
 
-pdb.set_trace()  ## DEBUG ##
-print(res)
+# generate image of graphs
+fnames = ['graph_{}'.format(k) for k in range(len(res))]
+for fname, path in zip(fnames, res):
+    f = Digraph(name=fname, format='png')
+    f.attr('node', shape='circle')
 
-f = Digraph()
-f.attr('node', shape='circle')
+    edges_of_path = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
 
-for e, w in zip(A, W):
+    import pdb
+    pdb.set_trace()  ## DEBUG ##
+    for e, w in zip(A, W):
 
-    f.edge(inv_nodes[e[0]], inv_nodes[e[1]], label=str(w))
+        f.edge(inv_nodes[e[0]],
+               inv_nodes[e[1]],
+               label=str(w),
+               color='green' if ((e[0], e[1]) in edges_of_path) else None)
 
-f.view()
+    f.render()
+
+# plots images
+fig, axs = plt.subplots(1, len(fnames), figsize=(15, 6))
+for i, fname in enumerate(fnames):
+    im = plt.imread(fname + '.gv.png')
+    axs[i].imshow(im)
+    axs[i].set_title('path {}/{}'.format(i + 1, len(fnames)))
+    axs[i].axis('off')
+
+plt.show()
