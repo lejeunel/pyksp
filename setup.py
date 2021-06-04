@@ -87,16 +87,20 @@ class CMakeBuild(build_ext):
         print()  # Add an empty line for cleaner output
 
 
+with open('requirements.txt') as f:
+    install_requires = f.read().splitlines()
+
 setup(
     name='pyksp',
     version='0.2',
     author='Laurent Lejeune',
     author_email='me@lejeunel.org',
-    description='',
+    description='Edge-disjoint K-shortest paths',
     long_description='',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     ext_modules=[CMakeExtension('pyksp')],
+    install_requires=install_requires,
     cmdclass=dict(build_ext=CMakeBuild),
     test_suite='tests',
     zip_safe=False,
