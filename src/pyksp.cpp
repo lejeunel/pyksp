@@ -37,8 +37,7 @@ class PyKsp{
         ~PyKsp();
 
         std::vector<py::array_t<int>> run();
-        void config(float tolerance, bool a_min_cost, bool a_verbose, int a_l_max){
-          ksp->set_tolerance(tolerance);
+        void config(bool a_min_cost, bool a_verbose, int a_l_max){
           ksp->set_l_max(a_l_max);
           ksp->set_min_cost(a_min_cost);
           ksp->set_verbose(a_verbose);
@@ -96,7 +95,7 @@ PYBIND11_MODULE(pyksp, m) {
            const py::array_t<scalar_t> &,
            const int &, const int &, const int &>())
       .def("config", &PyKsp::config, "Set parameters",
-      py::arg("tol") = 1e-6, py::arg("min_cost") = false, py::arg("verbose") = true, py::arg("l_max") = -1)
+      py::arg("min_cost") = false, py::arg("verbose") = true, py::arg("l_max") = -1)
       .def("run", &PyKsp::run, "Runs K-shortest paths")
       .def("__repr__",
               [](const PyKsp &a) {

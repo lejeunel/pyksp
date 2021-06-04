@@ -30,13 +30,13 @@ A.append((nodes['g'], nodes['z']))
 A.append((nodes['c'], nodes['g']))
 A = np.array(A)
 
-# define weights (lenghts) of each edge
+# define weights (lengths) of each edge
 W = np.array([1, 1, 1, 1, 1, 3, 5, 1, 1, 2, 7, 2, 1])
 
 # initialize graph object using arguments:
-# - ndarray of shape [N] where each element is the index of an input node
-# - ndarray of shape [N] where each element is the index of an output node
-# - ndarray of shape [N] where each element is the weight (length) of the corresponding edge
+# - ndarray of shape [N] where each element u[i] is the index of the input node of edge i
+# - ndarray of shape [N] where each element v[i] is the index of the output node of edge i
+# - ndarray of shape [N] where each element w[i] is the weight (length) of edge i
 # - integer: total number of nodes in the graph
 # - integer: index of source node
 # - integer: index of sink node
@@ -44,8 +44,8 @@ graph = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
 
 # Since all our edges have positive lengths, the obvious solution would be the empty set
 # We set min_cost to False to force the algorithm to find some paths
-# l_max governs the maximum number of path to find (ineffective when min_cost is True)
-# The verbose flag will print progression to stdout
+# l_max governs the maximum number of path to find (ignored when min_cost is True)
+# The verbose flag will log to stdout
 graph.config(min_cost=False, verbose=True, l_max=3)
 
 # run algorithm

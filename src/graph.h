@@ -51,7 +51,6 @@ class Graph
 
         void set_min_cost(bool);
         void set_verbose(bool);
-        void set_tolerance(float);
         void set_l_max(int);
     private:
         int _n_vertices = 0;

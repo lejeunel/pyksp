@@ -380,7 +380,7 @@ void Graph::force_positivized_lengths() {
 
 void Graph::find_best_paths(){
 
-  scalar_t shortest_path_length, total_length;
+  scalar_t shortest_path_length;
   int iter = 0;
   Vertex *v;
   Edge *e;
@@ -408,7 +408,6 @@ void Graph::find_best_paths(){
     Dijkstra();
 
     shortest_path_length = 0.0;
-    total_length = 0.0;
 
     // Do we reach the sink?
     if(_sink->pred_edge_toward_source) {
@@ -420,9 +419,8 @@ void Graph::find_best_paths(){
         v = v->pred_edge_toward_source->origin_vertex;
       }
       if((shortest_path_length < 0.0) || (min_cost == false)) {
-          total_length += shortest_path_length;
           if(verbose)
-              std::cout << "k: " << iter << " cost: " << total_length << std::endl;
+              std::cout << "k: " << iter << " cost: " << shortest_path_length << std::endl;
         // Invert all the edges along the best path
         v = _sink;
         while(v->pred_edge_toward_source) {
@@ -437,8 +435,7 @@ void Graph::find_best_paths(){
     }
     ++iter;
 
-    if(min_cost & (shortest_path_length < 0.0) &
-       (std::abs(shortest_path_length) / total_length < tolerance))
+    if(min_cost & (shortest_path_length < 0.0))
         break;
     if((min_cost==false) && iter == l_max)
         break;
@@ -461,10 +458,6 @@ void Graph::set_min_cost(bool flag){
 
 void Graph::set_verbose(bool flag){
     verbose = flag;
-}
-
-void Graph::set_tolerance(float val){
-    tolerance = val;
 }
 
 void Graph::set_l_max(int val){
