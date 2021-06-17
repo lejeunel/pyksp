@@ -420,7 +420,8 @@ void Graph::find_best_paths(){
       }
       if((shortest_path_length < 0.0) || (min_cost == false)) {
           if(verbose)
-              std::cout << "k: " << iter << " cost: " << shortest_path_length << std::endl;
+            std::cout << "k: " << iter << " shortest-path cost: "
+                      << shortest_path_length << std::endl;
         // Invert all the edges along the best path
         v = _sink;
         while(v->pred_edge_toward_source) {
@@ -435,7 +436,7 @@ void Graph::find_best_paths(){
     }
     ++iter;
 
-    if(min_cost & (shortest_path_length < 0.0))
+    if(min_cost & (shortest_path_length >= 0.0))
         break;
     if((min_cost==false) && iter == l_max)
         break;

@@ -2,7 +2,6 @@
 
 import pyksp
 import numpy as np
-import pyksp
 from graphviz import Digraph
 import matplotlib.pyplot as plt
 import os
@@ -46,7 +45,7 @@ graph = pyksp.PyKsp(A[:, 0], A[:, 1], W, np.unique(A).size, 0, 7)
 # We set min_cost to False to force the algorithm to find some paths
 # l_max governs the maximum number of path to find (ignored when min_cost is True)
 # The verbose flag will log to stdout
-graph.config(min_cost=False, verbose=True, l_max=3)
+graph.config(min_cost=False, verbose=True, l_max=2)
 
 # run algorithm
 res = graph.run()
